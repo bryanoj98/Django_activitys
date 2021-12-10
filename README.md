@@ -41,3 +41,12 @@ Ejecutar el siguiente comando sobre la ruta del proyecto:
 ```sh
  python3 manage.py runserver
 ```
+## Heroku
+
+El proyecto se encuentra desplegado sobre los servidores gratuitos de Heroku bajo
+la siguiente URL:
+
+ - https://django-prueba1.herokuapp.com/activity/
+
+## Contacto
+bryanoj98@gmail.com
