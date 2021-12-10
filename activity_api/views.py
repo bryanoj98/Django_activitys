@@ -92,6 +92,7 @@ class ActivityViewset(viewsets.ModelViewSet):
 
         activity_object = Activity.objects.get(id=kwargs['pk'])
         activity_object.schedule = data["schedule"]
+        activity_object.updated_at = datetime.datetime.now() ##funciona?
         activity_object.save()
 
         serializer = ActivitySerializer(activity_object)

@@ -1,7 +1,9 @@
-from datetime import date
+from datetime import date, datetime
 
-from .models import Activity, Property
+from .models import Activity, Property, Survey
 from rest_framework import serializers
+
+today = date.today()
 
 
 class PropertySerializer(serializers.ModelSerializer):
@@ -10,26 +12,26 @@ class PropertySerializer(serializers.ModelSerializer):
         fields = ["id", "title", "address"]
 
 
-today = date.today()
+# class SurveySerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = Survey
+#         fields = ["answers", ]
 
 
-class ActivitySerializer(serializers.ModelSerializer):
-    property_id = PropertySerializer(read_only=True)  # True, no sale para llenar
-    # tracks = serializers.HyperlinkedRelatedField(
-    #     many=True,
-    #     read_only=True,
-    #     view_name='track-detail'
-    # )
-
-    # created_at = serializers.CreateOnlyDefault(default=today) #CreateOnlyField()
-    # schedule = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
-    property = serializers.PrimaryKeyRelatedField(queryset=Property.objects.all(), source="property_id",write_only=True)
+class ActivitySerializer(serializers.HyperlinkedModelSerializer):
+    property_id = PropertySerializer(read_only=True)
+    property = serializers.PrimaryKeyRelatedField(queryset=Property.objects.all(), source="property_id",
+                                                  write_only=True)
     condition = serializers.SerializerMethodField('evaluar_condiciones')
 
     def evaluar_condiciones(self, foo):
-        if foo.status == "active" and foo.schedule.date() >= today:
+        try:
+            schedule_data = foo.schedule.date()
+        except:
+            schedule_data = datetime.strptime(foo.schedule.replace('T', ''), "%Y-%m-%d%H:%M").date()
+        if foo.status == "active" and schedule_data >= today:
             return "Pendiente a realizar"
-        elif foo.status == "active" and foo.schedule.date() < today:
+        elif foo.status == "active" and schedule_data < today:
             return "Atrasada"
         elif foo.status == "done":
             return "Finalizada"
