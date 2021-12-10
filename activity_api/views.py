@@ -17,6 +17,7 @@ class ActivityViewset(viewsets.ModelViewSet):
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
 
+
     def get_queryset(self):
         actividades = Activity.objects.all()
         filter_status = self.request.GET.get('status')
