@@ -12,13 +12,7 @@ class PropertySerializer(serializers.ModelSerializer):
         fields = ["id", "title", "address"]
 
 
-# class SurveySerializer(serializers.HyperlinkedModelSerializer):
-#     class Meta:
-#         model = Survey
-#         fields = ["answers", ]
-
-
-class ActivitySerializer(serializers.HyperlinkedModelSerializer):
+class ActivitySerializer(serializers.ModelSerializer):
     property_id = PropertySerializer(read_only=True)
     property = serializers.PrimaryKeyRelatedField(queryset=Property.objects.all(), source="property_id",
                                                   write_only=True)
