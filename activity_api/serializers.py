@@ -22,7 +22,7 @@ class ActivitySerializer(serializers.ModelSerializer):
         try:
             schedule_data = foo.schedule.date()
         except:
-            schedule_data = datetime.strptime(foo.schedule.replace('T', ''), "%Y-%m-%d%H:%M").date()
+            schedule_data = datetime.strptime(foo.schedule.replace('T', ''), "%Y-%m-%d%H:%M:%S").date()
         if foo.status == "active" and schedule_data >= today:
             return "Pendiente a realizar"
         elif foo.status == "active" and schedule_data < today:
