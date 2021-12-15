@@ -17,7 +17,6 @@ class ActivityViewset(viewsets.ModelViewSet):
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
 
-
     def get_queryset(self):
         actividades = Activity.objects.all()
         filter_status = self.request.GET.get('status')
@@ -69,12 +68,11 @@ class ActivityViewset(viewsets.ModelViewSet):
         if property.status == "disable":
             return Response({"Error": "Propiedad desactivada"})
 
-
         schedule_data = datetime.datetime.strptime(data['schedule'].replace('T', ''), "%Y-%m-%d%H:%M")
 
         cruce_actividades = Activity.objects.filter(
             schedule__range=(
-            schedule_data - datetime.timedelta(minutes=59), schedule_data + datetime.timedelta(minutes=59)))
+                schedule_data - datetime.timedelta(minutes=59), schedule_data + datetime.timedelta(minutes=59)))
         if cruce_actividades:
             return Response({"Error": "Existen actividades previas asignadas a la propiedad dentro del rango horario"})
 
@@ -82,8 +80,10 @@ class ActivityViewset(viewsets.ModelViewSet):
                                                title=data['title'], created_at=datetime.datetime.now(),
                                                updated_at=datetime.datetime.now(), status=data['status'])
         new_Activity.save()
-
-        serializer = ActivitySerializer(new_Activity)
+        serializer_context = {
+            'request': request,
+        }
+        serializer = ActivitySerializer(new_Activity, context=serializer_context)
         return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
@@ -93,10 +93,13 @@ class ActivityViewset(viewsets.ModelViewSet):
 
         activity_object = Activity.objects.get(id=kwargs['pk'])
         activity_object.schedule = data["schedule"]
-        activity_object.updated_at = datetime.datetime.now() ##funciona?
+        activity_object.updated_at = datetime.datetime.now()
         activity_object.save()
 
-        serializer = ActivitySerializer(activity_object)
+        serializer_context = {
+            'request': request,
+        }
+        serializer = ActivitySerializer(activity_object, context=serializer_context)
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
@@ -104,7 +107,10 @@ class ActivityViewset(viewsets.ModelViewSet):
         activity_object.status = "cancel"
         activity_object.save()
 
-        serializer = ActivitySerializer(activity_object)
+        serializer_context = {
+            'request': request,
+        }
+        serializer = ActivitySerializer(activity_object, context=serializer_context)
         return Response(serializer)
 
 
